@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const flash = require('connect-flash');
 const methodOveride = require('method-override');
 const LocalStrategy = require('passport-local');
 const Campground = require('./models/campground');
@@ -21,9 +22,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(methodOveride('_method'));
+app.use(flash());
 //seedDB();
 
 // Passport Configuration
+// App is making use of express session
 app.use(
   require('express-session')({
     secret: "impossible doesn't exist",
@@ -40,6 +43,8 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(function (req, res, next) {
   res.locals.currentUser = req.user;
+  res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
   next();
 });
 
