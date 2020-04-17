@@ -48,7 +48,7 @@ router.post('/', isLoggedIn, function (req, res) {
 });
 
 // Comments edit route
-router.get('/:comment_id/edit', function (req, res) {
+router.get('/:comment_id/edit', checkCommentOwnership, function (req, res) {
   // id refers to the campground id which was defined in app.js
   Comment.findById(req.params.comment_id, function (err, foundComment) {
     if (err) {
@@ -63,12 +63,28 @@ router.get('/:comment_id/edit', function (req, res) {
 });
 
 // Comments update
-router.put('/:comment_id', function (req, res) {
+router.put('/:comment_id', checkCommentOwnership, function (req, res) {
   Comment.findByIdAndUpdate(
     req.params.comment_id,
     req.body.comment,
     { useFindAndModify: false },
     function (err, updatedComment) {
+      if (err) {
+        res.redirect('back');
+      } else {
+        res.redirect('/campgrounds/' + req.params.id);
+      }
+    }
+  );
+});
+
+// Destroy comment route
+router.delete('/:comment_id', checkCommentOwnership, function (req, res) {
+  // find by id and remove
+  Comment.findByIdAndRemove(
+    req.params.comment_id,
+    { useFindAndModify: false },
+    function (err) {
       if (err) {
         res.redirect('back');
       } else {
@@ -84,6 +100,25 @@ function isLoggedIn(req, res, next) {
     return next();
   }
   res.redirect('/login');
+}
+
+function checkCommentOwnership(req, res, next) {
+  if (req.isAuthenticated()) {
+    Comment.findById(req.params.comment_id, function (err, foundComment) {
+      if (err) {
+        res.redirect('back');
+      } else {
+        // logged in user id is stored in req.user._id thanks to passport
+        if (foundComment.author.id.equals(req.user._id)) {
+          next();
+        } else {
+          res.redirect('back');
+        }
+      }
+    });
+  } else {
+    res.redirect('back');
+  }
 }
 
 module.exports = router;
