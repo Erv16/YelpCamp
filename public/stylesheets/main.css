@@ -1,3 +1,25 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+.container .text-muted {
+  margin: 20px 0;
+  text-align: center;
+}
+
 .thumbnail img {
   width: 100%;
 }
@@ -11,5 +33,17 @@
 }
 
 #delete-form {
-  display: inline;
+  display: inline-block;
+}
+
+/* Flexbox grid fix */
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Google Maps */
+#map {
+  height: 400px;
+  width: 100%;
 }
