@@ -18,6 +18,9 @@ router.get('/register', function (req, res) {
 // handle sign up logic
 router.post('/register', function (req, res) {
   let newUser = new User({ username: req.body.username });
+  if (req.body.adminCode === 'rootAccess94516***') {
+    newUser.isAdmin = true;
+  }
   // log user in
   User.register(newUser, req.body.password, function (err, user) {
     if (err) {
@@ -28,7 +31,7 @@ router.post('/register', function (req, res) {
         // redirect
         req.flash(
           'success',
-          'Successfully Signed Up! Nice to meet you ' + user.username
+          'Successfully Signed Up! Nice to meet you ' + user.username + '.'
         );
         res.redirect('/campgrounds');
       });
@@ -55,7 +58,7 @@ router.post('/login', function (req, res, next) {
 // Logout
 router.get('/logout', function (req, res) {
   req.logOut();
-  req.flash('success', 'Logged you out!');
+  req.flash('success', 'See you later!');
   res.redirect('/campgrounds');
 });
 
