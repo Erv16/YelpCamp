@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 // Schema Setup
 
 const campgroundSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, require: 'Campground name cannot be blank.' },
   price: String,
   image: String,
   description: String,

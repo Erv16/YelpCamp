@@ -47,3 +47,8 @@ body {
   height: 400px;
   width: 100%;
 }
+
+#login {
+  text-align: center;
+  font-size: medium;
+}
