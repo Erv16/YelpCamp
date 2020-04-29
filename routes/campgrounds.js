@@ -117,7 +117,7 @@ router.get('/new', middleware.isLoggedIn, function (req, res) {
 router.get('/:id', function (req, res) {
   // Find the campground with provided id
   Campground.findById(req.params.id)
-    .populate('comments')
+    .populate('comments likes')
     .exec(function (err, foundCampground) {
       if (err || !foundCampground) {
         req.flash('error', 'Campground not found');
@@ -158,8 +158,18 @@ router.put('/:id', middleware.checkCampgroundOwnership, function (req, res) {
         req.flash('error', err.message);
         res.redirect('back');
       } else {
-        req.flash('success', 'Successfully Updated!');
-        res.redirect('/campgrounds/' + campground._id);
+        campground.name = req.body.campground.name;
+        campground.description = req.body.campground.description;
+        campground.image = req.body.campground.image;
+        campground.save(function (err) {
+          if (err) {
+            console.log(err);
+            res.redirect('/campgrounds');
+          } else {
+            req.flash('success', 'Successfully Updated!');
+            res.redirect('/campgrounds/' + campground._id);
+          }
+        });
       }
     });
   });
@@ -185,6 +195,37 @@ router.delete('/:id', middleware.checkCampgroundOwnership, function (req, res) {
       );
     }
   );
+});
+
+// Campground Like Route
+router.post('/:id/like', middleware.isLoggedIn, function (req, res) {
+  Campground.findById(req.params.id, function (err, foundCampground) {
+    if (err) {
+      console.log(err);
+      return res.redirect('/campgrounds');
+    }
+
+    // check if req.user._id exists in foundCampground.likes
+    var foundUserLike = foundCampground.likes.some(function (like) {
+      return like.equals(req.user._id);
+    });
+
+    if (foundUserLike) {
+      // user already liked, removing like
+      foundCampground.likes.pull(req.user._id);
+    } else {
+      // adding the new user like
+      foundCampground.likes.push(req.user);
+    }
+
+    foundCampground.save(function (err) {
+      if (err) {
+        console.log(err);
+        return res.redirect('/campgrounds');
+      }
+      return res.redirect('/campgrounds/' + foundCampground._id);
+    });
+  });
 });
 
 function escapeRegex(text) {
