@@ -15,8 +15,9 @@ const commentRoutes = require('./routes/comments');
 const campgroundRoutes = require('./routes/campgrounds');
 const authRoutes = require('./routes/index');
 
+const uri = process.env.MONGOLAB_URI;
 mongoose
-  .connect(process.env.MONGOLAB_URI, {
+  .connect(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
