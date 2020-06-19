@@ -17,44 +17,6 @@ var options = {
 
 var geocoder = NodeGeocoder(options);
 
-// Index - shows all campgrounds
-// router.get('/', function (req, res) {
-//   if (req.query.search) {
-//     const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-//     Campground.find({ name: regex }, function (err, allCampgrounds) {
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         if (allCampgrounds.length < 1) {
-//           req.flash(
-//             'error',
-//             'No campgrounds matched your search. Please try again.'
-//           );
-//           return res.redirect('back');
-//         }
-//         res.render('campgrounds/index.ejs', {
-//           campgrounds: allCampgrounds,
-//           currentUser: req.user,
-//           page: 'campgrounds',
-//         });
-//       }
-//     });
-//   } else {
-//     // Get campgrounds from db
-//     Campground.find({}, function (err, allCampgrounds) {
-//       if (err) {
-//         console.log(err);
-//       } else {
-//         res.render('campgrounds/index.ejs', {
-//           campgrounds: allCampgrounds,
-//           currentUser: req.user,
-//           page: 'campgrounds',
-//         });
-//       }
-//     });
-//   }
-// });
-
 //INDEX - show all campgrounds
 router.get('/', function (req, res) {
   var perPage = 8;
@@ -120,7 +82,7 @@ router.post('/', middleware.isLoggedIn, async function (req, res) {
     id: req.user._id,
     username: req.user.username,
   };
-  var cost = req.body.price;
+  var cost = req.body.cost;
 
   geocoder.geocode(req.body.location, async function (err, data) {
     if (err || !data.length) {
@@ -216,6 +178,7 @@ router.put('/:id', middleware.checkCampgroundOwnership, function (req, res) {
         campground.name = req.body.campground.name;
         campground.description = req.body.campground.description;
         campground.image = req.body.campground.image;
+        campground.cost = req.body.campground.cost;
         campground.save(function (err) {
           if (err) {
             console.log(err);
